@@ -12,12 +12,19 @@ function FilterBox() {
     setInputCategories,
   } = useProductContext();
 
+  function isCategorySelected(category){
+    let index = inputCategories.findIndex((item) => item===category);
+    return index!==-1;
+
+  }
+
   const toggleInputCategory = (category) => {
     const index = inputCategories.findIndex((ele) => ele === category);
     if (index === -1) {
       setInputCategories([...inputCategories, category]);
     } else {
-      setInputCategories((prev) => prev.splice(index, 1));
+      let new_list = inputCategories.filter((ele)=> ele!==category);
+      setInputCategories(new_list);
     }
   };
 
@@ -54,6 +61,7 @@ function FilterBox() {
                   onChange={(e) => {
                     toggleInputCategory(category);
                   }}
+                  checked={isCategorySelected(category)}
                 />
                 {category}
               </div>
