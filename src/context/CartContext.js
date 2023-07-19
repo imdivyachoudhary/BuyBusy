@@ -67,6 +67,7 @@ export default function CustomCartContext({ children }) {
         // console.log(cart_arr[0]);
         setCart(cart_arr[0]);
       } else {
+        setCart(null);
         // createCart();
       }
       setLoading(false);
