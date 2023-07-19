@@ -64,7 +64,7 @@ function Orders() {
                   <tr key={order.id}>
                     <td>#{order.order_id}</td>
                     <td>{getOrderDate(order.ordered_at)}</td>
-                    <td>{order.totalPrice}</td>
+                    <td>Rs. {order.totalPrice}</td>
                     <td><Link to={`/order-detail/${order.order_id}`}>View</Link></td>
                   </tr>
                 ))}
