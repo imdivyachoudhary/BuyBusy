@@ -7,7 +7,9 @@ function Navbar() {
     return (
         <>
         <div className={styles.Navbar}>
-            <div className={styles.Logo}>BuyBusy</div>
+            <div className={styles.Logo}>
+                <img alt="logo" src="https://img.icons8.com/?size=1x&id=rBQmeaLgDfht&format=png" />
+                BuyBusy</div>
             <SearchBar />
             <Menu />
         </div>
