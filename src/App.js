@@ -15,6 +15,7 @@ import Cart from "./components/Cart/Cart";
 import Orders from "./components/Orders/Orders";
 import Page404 from "./components/pages/Page404";
 import OrderDetail from "./components/Orders/OrderDetail";
+import { useEffect } from "react";
 
 function App() {
   const browserRouter = createBrowserRouter([
@@ -69,6 +70,16 @@ function App() {
       ],
     },
   ]);
+
+  useEffect(()=>{
+    var link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = "https://img.icons8.com/?size=1x&id=rBQmeaLgDfht&format=png";
+  },[])
 
   return (
     <CustomAuthContext>
