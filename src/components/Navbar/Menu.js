@@ -3,9 +3,20 @@ import MenuItem from "./MenuItem";
 import { useAuthContext } from "../../context/AuthContext";
 import { NavLink } from "react-router-dom";
 import { useCartContext } from "../../context/CartContext";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  authSelector,
+  signOut,
+  signOutUser,
+} from "../../redux/reducers/authReducer";
 
 function Menu() {
-  const { isLoggedIn, signOutUser } = useAuthContext();
+  // const { isLoggedIn, signOutUser } = useAuthContext();
+
+  const dispatch = useDispatch();
+
+  const { isLoggedIn } = useSelector(authSelector);
+
   const { cart } = useCartContext();
 
   return (
@@ -63,7 +74,7 @@ function Menu() {
           />
         </NavLink>
       ) : (
-        <NavLink onClick={() => signOutUser()}>
+        <NavLink onClick={() => dispatch(signOutUser())}>
           <MenuItem
             itemName="Sign Out"
             itemImage="https://cdn-icons-png.flaticon.com/128/4034/4034229.png"

@@ -1,18 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import styles from "./Orders.module.css";
 import { useCartContext } from "../../context/CartContext";
 import Loader from "../Loader/Loader";
-import { useAuthContext } from "../../context/AuthContext";
+// import { useAuthContext } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { authSelector } from "../../redux/reducers/authReducer";
+import { useCookieContext } from "../../context/CookieContext";
 
 function Orders() {
-  const { isLoggedIn, cookie } = useAuthContext();
+  // const { isLoggedIn, cookie } = useAuthContext();
+
+  const { isLoggedIn, loadingAuth } = useSelector(authSelector);
+
   const { orders, loading, setOrderPlaced } = useCartContext();
+
+  const { cookie } = useCookieContext();
 
   const navigate = useNavigate();
 
-  function getOrderDate(timestamp){
-    return timestamp.toDate().toLocaleDateString() + "," + timestamp.toDate().toLocaleTimeString("en-Us");
+  function getOrderDate(timestamp) {
+    return (
+      timestamp.toDate().toLocaleDateString() +
+      "," +
+      timestamp.toDate().toLocaleTimeString("en-Us")
+    );
   }
 
   useEffect(() => {
@@ -31,7 +43,7 @@ function Orders() {
 
   return (
     <div className={styles.Orders}>
-      {loading ? (
+      {!isLoggedIn || loading ? (
         <Loader />
       ) : orders ? (
         orders.length === 0 ? (
@@ -65,7 +77,9 @@ function Orders() {
                     <td>#{order.order_id}</td>
                     <td>{getOrderDate(order.ordered_at)}</td>
                     <td>Rs. {order.totalPrice}</td>
-                    <td><Link to={`/order-detail/${order.order_id}`}>View</Link></td>
+                    <td>
+                      <Link to={`/order-detail/${order.order_id}`}>View</Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

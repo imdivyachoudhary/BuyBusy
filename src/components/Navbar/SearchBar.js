@@ -1,9 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Navbar.module.css";
 import { useProductContext } from "../../context/ProductContext";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  productActions,
+  productSelector,
+} from "../../redux/reducers/productReducer";
 
-function SearchBar () {
-  const {searchText, setSearchText} = useProductContext();
+function SearchBar() {
+  // const {searchText, setSearchText} = useProductContext();
+
+  const dispatch = useDispatch();
+
+  const { searchText } = useSelector(productSelector);
 
   return (
     <div className={styles.SearchBar}>
@@ -12,10 +21,10 @@ function SearchBar () {
         placeholder="Search Product..."
         value={searchText}
         onChange={(e) => {
-          setSearchText(e.currentTarget.value);
+          dispatch(productActions.setSearchText(e.currentTarget.value));
         }}
       ></input>
-      {searchText.length===0 ? (
+      {searchText.length === 0 ? (
         <div className={styles.SearchImage}>
           <img
             alt="search"
@@ -27,13 +36,15 @@ function SearchBar () {
           <img
             alt="clear"
             src="https://cdn-icons-png.flaticon.com/128/1632/1632708.png"
-            style={{cursor:"pointer"}}
-            onClick={()=>{setSearchText("")}}
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              dispatch(productActions.setSearchText(""));
+            }}
           />
         </div>
       )}
     </div>
   );
-};
+}
 
 export default SearchBar;

@@ -5,17 +5,19 @@ import {
   doc,
   collection,
   addDoc,
-  setDoc,
-  getDocs,
-  deleteDoc,
+  // setDoc,
+  // getDocs,
+  // deleteDoc,
   updateDoc,
   onSnapshot,
   query,
   orderBy,
   where,
 } from "firebase/firestore";
-import { useAuthContext } from "./AuthContext";
-import {v4 as uuidv4} from "uuid";
+// import { useAuthContext } from "./AuthContext";
+import { v4 as uuidv4 } from "uuid";
+import { useSelector } from "react-redux";
+import { authSelector } from "../redux/reducers/authReducer";
 
 const CartContext = createContext();
 
@@ -30,7 +32,8 @@ export default function CustomCartContext({ children }) {
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
 
-  const { isLoggedIn, user } = useAuthContext();
+  // const { isLoggedIn, user } = useAuthContext();
+  const { isLoggedIn, user } = useSelector(authSelector);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -171,16 +174,20 @@ export default function CustomCartContext({ children }) {
 
   const placeOrder = async (cart_id) => {
     try {
-        const docRef = doc(db, "carts", cart_id);
-        await updateDoc(docRef, { ordered: true, ordered_at:new Date(), order_id:uuidv4()});
-        toast.success("Congratulations!! Your Order has been Confirmed");
-        setOrderPlaced(true);
-      } catch (error) {
-        console.log(error);
-        toast.error("Something Went Wrong!!!");
-      } finally {
-      }
-  }
+      const docRef = doc(db, "carts", cart_id);
+      await updateDoc(docRef, {
+        ordered: true,
+        ordered_at: new Date(),
+        order_id: uuidv4(),
+      });
+      toast.success("Congratulations!! Your Order has been Confirmed");
+      setOrderPlaced(true);
+    } catch (error) {
+      console.log(error);
+      toast.error("Something Went Wrong!!!");
+    } finally {
+    }
+  };
 
   return (
     <CartContext.Provider
@@ -194,7 +201,7 @@ export default function CustomCartContext({ children }) {
         loading,
         orderPlaced,
         setOrderPlaced,
-        placeOrder
+        placeOrder,
       }}
     >
       {children}

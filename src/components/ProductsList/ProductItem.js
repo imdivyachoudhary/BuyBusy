@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useCartContext } from "../../context/CartContext";
 import styles from "./ProductsList.module.css";
-import { useAuthContext } from "../../context/AuthContext";
+// import { useAuthContext } from "../../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { authSelector } from "../../redux/reducers/authReducer";
 
 function ProductItem({ product }) {
   const { isItemInCart, addToCart, removeFromCart } = useCartContext();
-  const { isLoggedIn } = useAuthContext();
+  // const { isLoggedIn } = useAuthContext();
+
+  const dispatch = useDispatch();
+
+  const { isLoggedIn } = useSelector(authSelector);
+
   const navigate = useNavigate();
 
   const handleAddToCart = (product) => {

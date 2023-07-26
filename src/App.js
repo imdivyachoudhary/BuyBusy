@@ -2,12 +2,13 @@ import "./App.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import Navbar from "./components/Navbar/Navbar";
 import MainBody from "./components/MainBody/MainBody";
 import ProductsList from "./components/ProductsList/ProductsList";
 import FilterBox from "./components/FilterBox/FilterBox";
-import CustomProductContext from "./context/ProductContext";
-import CustomAuthContext from "./context/AuthContext";
+// import CustomProductContext from "./context/ProductContext";
+// import CustomAuthContext from "./context/AuthContext";
 import SignIn from "./components/Auth/SignIn";
 import SignUp from "./components/Auth/SignUp";
 import CustomCartContext from "./context/CartContext";
@@ -16,8 +17,81 @@ import Orders from "./components/Orders/Orders";
 import Page404 from "./components/pages/Page404";
 import OrderDetail from "./components/Orders/OrderDetail";
 import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  notificationActions,
+  notificationSelector,
+} from "./redux/reducers/notificationReducer";
+import { authActions, authSelector } from "./redux/reducers/authReducer";
+import { useCookieContext } from "./context/CookieContext";
+import {
+  fetchAllCategories,
+  fetchAllProducts,
+  productActions,
+  productSelector,
+} from "./redux/reducers/productReducer";
+// import { useCookies } from "react-cookie";
 
 function App() {
+  const { cookie, setCookie, removeCookie } = useCookieContext();
+  // const [cookie, setCookie, removeCookie] = useCookies(["user"]);
+
+  const dispatch = useDispatch();
+
+  const { success_notification, error_notification } =
+    useSelector(notificationSelector);
+
+  const { isLoggedIn, user } = useSelector(authSelector);
+
+  const { searchText, inputPrice, inputCategories } =
+    useSelector(productSelector);
+
+  useEffect(() => {
+    var link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = "https://img.icons8.com/?size=1x&id=rBQmeaLgDfht&format=png";
+  }, []);
+
+  useEffect(() => {
+    if (cookie.user) {
+      dispatch(authActions.login({ user: cookie.user }));
+    } else {
+      dispatch(authActions.logout());
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchAllProducts());
+    dispatch(fetchAllCategories());
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      let d = new Date();
+      d.setTime(d.getTime() + 2 * 60 * 60 * 1000);
+      setCookie("user", user, { expires: d });
+    } else {
+      removeCookie("user");
+    }
+  }, [isLoggedIn, user]);
+
+  useEffect(() => {
+    if (error_notification) {
+      toast.error(error_notification);
+    } else if (success_notification) {
+      toast.success(success_notification);
+    }
+    dispatch(notificationActions.reset());
+  }, [success_notification, error_notification]);
+
+  useEffect(() => {
+    dispatch(productActions.filterProducts());
+  }, [searchText, inputPrice, inputCategories]);
+
   const browserRouter = createBrowserRouter([
     {
       path: "/",
@@ -60,36 +134,28 @@ function App() {
         {
           path: "orders",
           element: (
-            <MainBody><Orders /></MainBody>
-          )
+            <MainBody>
+              <Orders />
+            </MainBody>
+          ),
         },
         {
           path: "order-detail/:order_id",
-          element : <MainBody><OrderDetail /></MainBody>
-        }
+          element: (
+            <MainBody>
+              <OrderDetail />
+            </MainBody>
+          ),
+        },
       ],
     },
   ]);
 
-  useEffect(()=>{
-    var link = document.querySelector("link[rel~='icon']");
-    if (!link) {
-      link = document.createElement("link");
-      link.rel = "icon";
-      document.head.appendChild(link);
-    }
-    link.href = "https://img.icons8.com/?size=1x&id=rBQmeaLgDfht&format=png";
-  },[])
-
   return (
-    <CustomAuthContext>
-      <CustomProductContext>
-        <CustomCartContext>
-          <ToastContainer style={{ marginTop: "60px" }} />
-          <RouterProvider router={browserRouter} />
-        </CustomCartContext>
-      </CustomProductContext>
-    </CustomAuthContext>
+    <CustomCartContext>
+      <ToastContainer style={{ marginTop: "60px" }} />
+      <RouterProvider router={browserRouter} />
+    </CustomCartContext>
   );
 }
 

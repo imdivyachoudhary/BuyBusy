@@ -3,10 +3,14 @@ import styles from "./ProductsList.module.css";
 import ProductItem from "./ProductItem";
 import { useProductContext } from "../../context/ProductContext";
 import Loader from "../Loader/Loader";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllCategories, fetchAllProducts, productActions, productSelector } from "../../redux/reducers/productReducer";
 
 function ProductsList() {
 
-  const {products, loadingProducts} = useProductContext();
+  // const {products, loadingProducts} = useProductContext();
+
+  const {products, loadingProducts} = useSelector(productSelector);
 
   return (
     <div className={styles.ProductsList}>

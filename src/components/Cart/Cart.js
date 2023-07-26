@@ -3,12 +3,20 @@ import styles from "./Cart.module.css";
 import { useCartContext } from "../../context/CartContext";
 import CartItem from "./CartItem";
 import Loader from "../Loader/Loader";
-import { useAuthContext } from "../../context/AuthContext";
+// import { useAuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { authSelector } from "../../redux/reducers/authReducer";
+import { useCookieContext } from "../../context/CookieContext";
 
 function Cart() {
-  const { isLoggedIn,cookie } = useAuthContext();
+  // const { isLoggedIn,cookie } = useAuthContext();
+
+  const { isLoggedIn, loadingAuth } = useSelector(authSelector);
+
   const { cart, loading, orderPlaced, placeOrder } = useCartContext();
+
+  const { cookie } = useCookieContext();
 
   const navigate = useNavigate();
 
@@ -16,23 +24,23 @@ function Cart() {
     if (!cookie.user) {
       navigate("/");
     }
-  },[]);
+  }, []);
 
   useEffect(() => {
     if (!cookie.user) {
       navigate("/");
     }
-  },[isLoggedIn]);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     if (orderPlaced) {
       navigate("/orders");
     }
-  },[orderPlaced]);
+  }, [orderPlaced]);
 
   return (
     <div className={styles.Cart}>
-      {loading ? (
+      {!isLoggedIn || loading ? (
         <Loader />
       ) : cart ? (
         cart.items.length === 0 ? (
@@ -54,7 +62,9 @@ function Cart() {
                 <h1>Rs. {cart.totalPrice.toFixed(2)}</h1>
               </div>
               <div className={styles.OrderButton}>
-                <button onClick={()=>placeOrder(cart.id)}>Confirm Order</button>
+                <button onClick={() => placeOrder(cart.id)}>
+                  Confirm Order
+                </button>
               </div>
             </div>
             {cart.items.map((item) => (

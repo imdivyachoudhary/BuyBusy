@@ -1,32 +1,28 @@
 import { useEffect } from "react";
 import styles from "./FilterBox.module.css";
 import { useProductContext } from "../../context/ProductContext";
+import { useDispatch, useSelector } from "react-redux";
+import { productActions, productSelector } from "../../redux/reducers/productReducer";
 
 function FilterBox() {
-  const {
-    categories,
-    loadingCategories,
-    inputPrice,
-    setInputPrice,
-    inputCategories,
-    setInputCategories,
-  } = useProductContext();
+  // const {
+  //   categories,
+  //   loadingCategories,
+  //   inputPrice,
+  //   setInputPrice,
+  //   inputCategories,
+  //   setInputCategories,
+  // } = useProductContext();
+
+  const dispatch = useDispatch();
+
+  const {categories, loadingCategories, inputPrice, inputCategories} = useSelector(productSelector);
 
   function isCategorySelected(category){
     let index = inputCategories.findIndex((item) => item===category);
     return index!==-1;
 
   }
-
-  const toggleInputCategory = (category) => {
-    const index = inputCategories.findIndex((ele) => ele === category);
-    if (index === -1) {
-      setInputCategories([...inputCategories, category]);
-    } else {
-      let new_list = inputCategories.filter((ele)=> ele!==category);
-      setInputCategories(new_list);
-    }
-  };
 
   return (
     <div className={styles.FilterBox}>
@@ -42,7 +38,7 @@ function FilterBox() {
             max="50000"
             value={inputPrice}
             onChange={(e) => {
-              setInputPrice(e.currentTarget.value);
+              dispatch(productActions.setInputPrice(e.currentTarget.value));
             }}
             style={{ width: "80%" }}
           />
@@ -59,7 +55,7 @@ function FilterBox() {
                   value={category}
                   name="inputCategories"
                   onChange={(e) => {
-                    toggleInputCategory(category);
+                    dispatch(productActions.setInputCategories(category));
                   }}
                   checked={isCategorySelected(category)}
                 />
