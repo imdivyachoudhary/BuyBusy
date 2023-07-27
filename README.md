@@ -1,6 +1,7 @@
 # BuyBusy
 
 A simple shopping website for implementing cart and order.
+
 - Sign up using email-id and password.
 - Login using the emai-id and password.
 - Users can add product to cart or remove product from cart.
