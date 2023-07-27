@@ -16,14 +16,14 @@ const initialState = {
   cart: null,
   orders: [],
   orderPlaced: false,
-  loadingCart: false,
+  loadingCart: true,
   message: false,
 };
 
 export const setInitialState = createAsyncThunk(
   "cart/setInitialState",
   async (payload, thunkAPI) => {
-    thunkAPI.dispatch(cartActions.loading());
+    // thunkAPI.dispatch(cartActions.loading());
 
     let docRef = collection(db, "carts");
     let q = query(
@@ -36,13 +36,40 @@ export const setInitialState = createAsyncThunk(
         id: doc.id,
         ...doc.data(),
       }));
-      let cart_arr = data.filter((ele) => ele.ordered === false);
-      let orders_arr = data.filter((ele) => ele.ordered === true);
+
+      // let cart_arr = data.filter((ele) => ele.ordered === false);
+      // let orders_arr = data.filter((ele) => ele.ordered === true);
+
+      let cart = null;
+      let orders = [];
+      data.forEach((element) => {
+        if (element.ordered === false) {
+          cart = {
+            ...element,
+            created_at:
+              element.created_at.toDate().toLocaleDateString() +
+              "," +
+              element.created_at.toDate().toLocaleTimeString("en-Us"),
+          };
+        } else {
+          orders.push({
+            ...element,
+            created_at:
+              element.created_at.toDate().toLocaleDateString() +
+              "," +
+              element.created_at.toDate().toLocaleTimeString("en-Us"),
+            ordered_at:
+              element.ordered_at.toDate().toLocaleDateString() +
+              "," +
+              element.ordered_at.toDate().toLocaleTimeString("en-Us"),
+          });
+        }
+      });
 
       thunkAPI.dispatch(
         cartActions.setInitialState({
-          cart: cart_arr.length > 0 ? cart_arr[0] : null,
-          orders: orders_arr,
+          cart,
+          orders,
         })
       );
     });
@@ -80,6 +107,7 @@ export const updateCart = createAsyncThunk(
   "car/updateCart",
   async (payload, thunkAPI) => {
     try {
+      // console.log(payload);
       const docRef = doc(db, "carts", payload.cart.id);
       await updateDoc(docRef, {
         items: payload.items,
@@ -122,6 +150,104 @@ export const placeOrder = createAsyncThunk(
   }
 );
 
+export const addToCart = createAsyncThunk(
+  "cart/addToCart",
+  (payload, thunkAPI) => {
+    let cart = payload.cart;
+    if (!cart) {
+      let success_msg = "Product Added To Cart";
+      thunkAPI.dispatch(
+        createCart({
+          product: payload.product,
+          success_msg,
+          user: payload.user,
+        })
+      );
+    } else {
+      let items = cart.items;
+      let totalPrice = cart.totalPrice + payload.product.price;
+      // console.log(totalPrice);
+      // return;
+      let success_msg = null;
+      let index = items.findIndex((item) => item.id === payload.product.id);
+      if (index === -1) {
+        items = [{ ...payload.product, qty: 1 }, ...items];
+        success_msg = "Product Added To Cart";
+      } else {
+        items = items.map((ele, i) => {
+          if (i !== index) {
+            return ele;
+          } else {
+            return { ...ele, qty: ele.qty + 1 };
+          }
+        });
+      }
+      thunkAPI.dispatch(updateCart({ items, totalPrice, success_msg, cart }));
+    }
+  }
+);
+
+export const decreaseQty = createAsyncThunk(
+  "cart/decreaseQty",
+  (payload, thunkAPI) => {
+    // console.log(payload);
+    let cart = payload.cart;
+    let items = cart.items;
+    let totalPrice = cart.totalPrice - payload.product.price;
+    // console.log(totalPrice);
+    // return;
+    let success_msg = null;
+    let index = items.findIndex((item) => item.id === payload.product.id);
+    if (index !== -1) {
+      // items[index].qty--;
+      items = items.map((ele, i) => {
+        if (i !== index) {
+          return ele;
+        } else {
+          return { ...ele, qty: ele.qty - 1 };
+        }
+      });
+      if (items[index].qty === 0) {
+        // items.splice(index, 1);
+        items = items.filter((ele, i) => i !== index);
+        success_msg = "Product Removed From Cart";
+      }
+      thunkAPI.dispatch(updateCart({ items, totalPrice, success_msg, cart }));
+    }
+  }
+);
+
+export const removeFromCart = createAsyncThunk(
+  "cart/removeFromCart",
+  (payload, thunkAPI) => {
+    // console.log(payload);
+    let cart = payload.cart;
+    let items = cart.items;
+    let success_msg = null;
+    let index = items.findIndex((item) => item.id === payload.product.id);
+    if (index !== -1) {
+      // items.splice(index, 1);
+      let totalPrice =
+        cart.totalPrice - items[index].price * items[index].qty;
+      // console.log(totalPrice);
+      // return;
+      items = items.filter((ele, i) => i !== index);
+      success_msg = "Product Removed From Cart";
+      thunkAPI.dispatch(updateCart({ items, totalPrice, success_msg, cart }));
+    }
+  }
+);
+
+export const isItemInCart = (id, cart) => {
+  // console.log(cart, cart.items);
+  if (!cart) {
+    return false;
+  }
+  let items = cart.items;
+  let index = items.findIndex((item) => item.id === id);
+  return index !== -1;
+};
+
 const cartSlice = createSlice({
   name: "cart",
   initialState,
@@ -130,6 +256,7 @@ const cartSlice = createSlice({
       state.loadingCart = true;
     },
     setInitialState: (state, action) => {
+      // console.log(action.payload);
       state.cart = action.payload.cart;
       state.orders = action.payload.orders;
       state.loadingCart = false;

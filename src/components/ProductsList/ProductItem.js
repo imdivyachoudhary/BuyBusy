@@ -1,23 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import { useCartContext } from "../../context/CartContext";
+// import { useCartContext } from "../../context/CartContext";
 import styles from "./ProductsList.module.css";
 // import { useAuthContext } from "../../context/AuthContext";
 import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducer";
+import {
+  addToCart,
+  cartSelector,
+  isItemInCart,
+  removeFromCart,
+} from "../../redux/reducers/cartReducer";
 
 function ProductItem({ product }) {
-  const { isItemInCart, addToCart, removeFromCart } = useCartContext();
+  // const { isItemInCart, addToCart, removeFromCart } = useCartContext();
   // const { isLoggedIn } = useAuthContext();
 
   const dispatch = useDispatch();
 
-  const { isLoggedIn } = useSelector(authSelector);
+  const { isLoggedIn, user } = useSelector(authSelector);
+
+  const { cart } = useSelector(cartSelector);
 
   const navigate = useNavigate();
 
   const handleAddToCart = (product) => {
     if (isLoggedIn) {
-      addToCart(product);
+      dispatch(addToCart(product));
     } else {
       navigate("/sign-in");
     }
@@ -35,17 +43,17 @@ function ProductItem({ product }) {
           <p>{product.title}</p>
         </div>
         <div className={styles.CartImage}>
-          {isLoggedIn && isItemInCart(product.id) ? (
+          {isLoggedIn && isItemInCart(product.id, cart) ? (
             <img
               alt="Remove from Cart"
               src="https://cdn-icons-png.flaticon.com/128/4715/4715132.png"
-              onClick={() => removeFromCart(product)}
+              onClick={() => dispatch(removeFromCart({ product, cart }))}
             />
           ) : (
             <img
               alt="Add to Cart"
               src="https://cdn-icons-png.flaticon.com/128/4715/4715128.png"
-              onClick={() => handleAddToCart(product)}
+              onClick={() => handleAddToCart({ product, user, cart })}
             />
           )}
         </div>

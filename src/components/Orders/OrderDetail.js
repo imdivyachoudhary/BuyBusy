@@ -1,33 +1,35 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./Orders.module.css";
-import { useCartContext } from "../../context/CartContext";
+// import { useCartContext } from "../../context/CartContext";
 import Loader from "../Loader/Loader";
 // import { useAuthContext } from "../../context/AuthContext";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducer";
 import { useCookieContext } from "../../context/CookieContext";
+import { cartSelector } from "../../redux/reducers/cartReducer";
 
 function OrderDetail() {
   // const { isLoggedIn, cookie } = useAuthContext();
 
-  const { isLoggedIn, loadingAuth } = useSelector(authSelector);
+  const { isLoggedIn } = useSelector(authSelector);
 
   const { cookie } = useCookieContext();
 
-  const { orders, loading } = useCartContext();
+  // const { orders, loading } = useCartContext();
+  const { orders, loadingCart } = useSelector(cartSelector);
   const [order, setOrder] = useState(null);
 
   const navigate = useNavigate();
   const { order_id } = useParams();
 
-  function getOrderDate(timestamp) {
-    return (
-      timestamp.toDate().toLocaleDateString() +
-      "," +
-      timestamp.toDate().toLocaleTimeString("en-Us")
-    );
-  }
+  // function getOrderDate(timestamp) {
+  //   return (
+  //     timestamp.toDate().toLocaleDateString() +
+  //     "," +
+  //     timestamp.toDate().toLocaleTimeString("en-Us")
+  //   );
+  // }
 
   useEffect(() => {
     if (!cookie.user) {
@@ -55,7 +57,7 @@ function OrderDetail() {
 
   return (
     <div className={styles.Orders}>
-      {!isLoggedIn || loading ? (
+      {!isLoggedIn || loadingCart ? (
         <Loader />
       ) : order ? (
         <>
@@ -71,7 +73,7 @@ function OrderDetail() {
                 <tr>
                   <th>Order Date</th>
                   <th>:</th>
-                  <th>{getOrderDate(order.ordered_at)}</th>
+                  <th>{order.ordered_at}</th>
                 </tr>
                 <tr>
                   <th>Total Price</th>

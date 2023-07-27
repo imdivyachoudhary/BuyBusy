@@ -1,13 +1,33 @@
-import { useCartContext } from "../../context/CartContext";
+import { useDispatch, useSelector } from "react-redux";
+// import { useCartContext } from "../../context/CartContext";
 import styles from "./Cart.module.css";
+import {
+  addToCart,
+  cartSelector,
+  decreaseQty,
+  removeFromCart,
+} from "../../redux/reducers/cartReducer";
+import { authSelector } from "../../redux/reducers/authReducer";
 
 function CartItem({ item }) {
-  const { addToCart, decreaseQty, removeFromCart } = useCartContext();
+  // const { addToCart, decreaseQty, removeFromCart } = useCartContext();
+
+  const { user } = useSelector(authSelector);
+
+  const { cart } = useSelector(cartSelector);
+
+  const dispatch = useDispatch();
 
   return (
     <div className={styles.CartItem}>
-      <div className={styles.RemoveItem} onClick={() => removeFromCart(item)}>
-        <img alt="remove" src="https://t4.ftcdn.net/jpg/03/46/38/39/240_F_346383913_JQecl2DhpHy2YakDz1t3h0Tk3Ov8hikq.jpg" />
+      <div
+        className={styles.RemoveItem}
+        onClick={() => dispatch(removeFromCart({ product: item, cart }))}
+      >
+        <img
+          alt="remove"
+          src="https://t4.ftcdn.net/jpg/03/46/38/39/240_F_346383913_JQecl2DhpHy2YakDz1t3h0Tk3Ov8hikq.jpg"
+        />
       </div>
       <div className={styles.ItemDesc}>
         <div className={styles.ItemImage}>
@@ -23,7 +43,7 @@ function CartItem({ item }) {
           <img
             alt="plus"
             src="https://cdn-icons-png.flaticon.com/128/3574/3574956.png"
-            onClick={() => addToCart(item)}
+            onClick={() => dispatch(addToCart({ product: item, user, cart }))}
           />
         </div>
 
@@ -34,7 +54,7 @@ function CartItem({ item }) {
             alt="plus"
             src="https://cdn-icons-png.flaticon.com/128/3574/3574956.png"
             className={styles.ReverseArrow}
-            onClick={() => decreaseQty(item)}
+            onClick={() => dispatch(decreaseQty({ product: item, cart }))}
           />
         </div>
 

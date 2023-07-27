@@ -1,14 +1,11 @@
 import styles from "./Navbar.module.css";
 import MenuItem from "./MenuItem";
-import { useAuthContext } from "../../context/AuthContext";
+// import { useAuthContext } from "../../context/AuthContext";
 import { NavLink } from "react-router-dom";
-import { useCartContext } from "../../context/CartContext";
+// import { useCartContext } from "../../context/CartContext";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  authSelector,
-  signOut,
-  signOutUser,
-} from "../../redux/reducers/authReducer";
+import { authSelector, signOutUser } from "../../redux/reducers/authReducer";
+import { cartSelector } from "../../redux/reducers/cartReducer";
 
 function Menu() {
   // const { isLoggedIn, signOutUser } = useAuthContext();
@@ -17,7 +14,9 @@ function Menu() {
 
   const { isLoggedIn } = useSelector(authSelector);
 
-  const { cart } = useCartContext();
+  // const { cart } = useCartContext();
+
+  const { cart } = useSelector(cartSelector);
 
   return (
     <div className={styles.Menu}>

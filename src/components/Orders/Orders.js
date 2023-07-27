@@ -1,37 +1,42 @@
 import { useEffect } from "react";
 import styles from "./Orders.module.css";
-import { useCartContext } from "../../context/CartContext";
+// import { useCartContext } from "../../context/CartContext";
 import Loader from "../Loader/Loader";
 // import { useAuthContext } from "../../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducer";
 import { useCookieContext } from "../../context/CookieContext";
+import { cartActions, cartSelector } from "../../redux/reducers/cartReducer";
 
 function Orders() {
   // const { isLoggedIn, cookie } = useAuthContext();
 
-  const { isLoggedIn, loadingAuth } = useSelector(authSelector);
+  const dispatch = useDispatch();
 
-  const { orders, loading, setOrderPlaced } = useCartContext();
+  const { isLoggedIn } = useSelector(authSelector);
+
+  // const { orders, loading, setOrderPlaced } = useCartContext();
+
+  const { orders, loadingCart } = useSelector(cartSelector);
 
   const { cookie } = useCookieContext();
 
   const navigate = useNavigate();
 
-  function getOrderDate(timestamp) {
-    return (
-      timestamp.toDate().toLocaleDateString() +
-      "," +
-      timestamp.toDate().toLocaleTimeString("en-Us")
-    );
-  }
+  // function getOrderDate(timestamp) {
+  //   return (
+  //     timestamp.toDate().toLocaleDateString() +
+  //     "," +
+  //     timestamp.toDate().toLocaleTimeString("en-Us")
+  //   );
+  // }
 
   useEffect(() => {
     if (!cookie.user) {
       navigate("/");
     } else {
-      setOrderPlaced(false);
+      dispatch(cartActions.resetOrderPlaced());
     }
   }, []);
 
@@ -43,7 +48,7 @@ function Orders() {
 
   return (
     <div className={styles.Orders}>
-      {!isLoggedIn || loading ? (
+      {!isLoggedIn || loadingCart ? (
         <Loader />
       ) : orders ? (
         orders.length === 0 ? (
@@ -75,7 +80,7 @@ function Orders() {
                 {orders.map((order) => (
                   <tr key={order.id}>
                     <td>#{order.order_id}</td>
-                    <td>{getOrderDate(order.ordered_at)}</td>
+                    <td>{order.ordered_at}</td>
                     <td>Rs. {order.totalPrice}</td>
                     <td>
                       <Link to={`/order-detail/${order.order_id}`}>View</Link>

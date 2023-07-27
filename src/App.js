@@ -11,7 +11,7 @@ import FilterBox from "./components/FilterBox/FilterBox";
 // import CustomAuthContext from "./context/AuthContext";
 import SignIn from "./components/Auth/SignIn";
 import SignUp from "./components/Auth/SignUp";
-import CustomCartContext from "./context/CartContext";
+// import CustomCartContext from "./context/CartContext";
 import Cart from "./components/Cart/Cart";
 import Orders from "./components/Orders/Orders";
 import Page404 from "./components/pages/Page404";
@@ -30,6 +30,7 @@ import {
   productActions,
   productSelector,
 } from "./redux/reducers/productReducer";
+import { setInitialState } from "./redux/reducers/cartReducer";
 // import { useCookies } from "react-cookie";
 
 function App() {
@@ -74,6 +75,7 @@ function App() {
       let d = new Date();
       d.setTime(d.getTime() + 2 * 60 * 60 * 1000);
       setCookie("user", user, { expires: d });
+      dispatch(setInitialState({ user }));
     } else {
       removeCookie("user");
     }
@@ -152,10 +154,10 @@ function App() {
   ]);
 
   return (
-    <CustomCartContext>
+    <>
       <ToastContainer style={{ marginTop: "60px" }} />
       <RouterProvider router={browserRouter} />
-    </CustomCartContext>
+    </>
   );
 }
 
