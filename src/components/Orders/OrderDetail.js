@@ -78,7 +78,7 @@ function OrderDetail() {
                 <tr>
                   <th>Total Price</th>
                   <th>:</th>
-                  <th>Rs. {order.totalPrice}</th>
+                  <th>Rs. {order.totalPrice.toFixed(2)}</th>
                 </tr>
               </thead>
             </table>

@@ -81,7 +81,7 @@ function Orders() {
                   <tr key={order.id}>
                     <td>#{order.order_id}</td>
                     <td>{order.ordered_at}</td>
-                    <td>Rs. {order.totalPrice}</td>
+                    <td>Rs. {order.totalPrice.toFixed(2)}</td>
                     <td>
                       <Link to={`/order-detail/${order.order_id}`}>View</Link>
                     </td>
