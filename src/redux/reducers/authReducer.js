@@ -64,7 +64,7 @@ export const createUser = createAsyncThunk(
 export const signInUser = createAsyncThunk(
   "auth/signInUser",
   (payload, thunkAPI) => {
-    thunkAPI.dispatch(authActions.setLoading());
+    thunkAPI.dispatch(authActions.setLoading(true));
     signInWithEmailAndPassword(auth, payload.email, payload.password)
       .then((userCredential) => {
         // Signed in
@@ -87,6 +87,7 @@ export const signInUser = createAsyncThunk(
       .catch((error) => {
         // const errorCode = error.code;
         // thunkAPI.dispatch(authActions.logout());
+        thunkAPI.dispatch(authActions.setLoading(false));
         thunkAPI.dispatch(
           authActions.setNotification({
             error: error.message.split("Firebase:")[1],
@@ -124,7 +125,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setLoading: (state, action) => {
-      state.loadingAuth = true;
+      state.loadingAuth = action.payload;
     },
     login: (state, action) => {
       state.isLoggedIn = true;
