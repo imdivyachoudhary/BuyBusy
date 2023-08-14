@@ -6,6 +6,7 @@
 
 .ProductItem{
     width: 300px;
+    height: max-content;
     display: flex;
     flex-direction: column;
     border: 5px solid rgb(190, 140, 236);
