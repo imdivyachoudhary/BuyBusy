@@ -1,5 +1,5 @@
 .AuthForm{
-    width: 400px;
+    width:400px;
     display: flex;
     flex-direction: column;
     border: 5px solid rgb(190, 140, 236);
@@ -7,8 +7,10 @@
     margin: 100px;
     padding: 20px;
     align-items: center;
+   
 
 }
+
 
 .FormHeader{
     width: 80%;
@@ -57,3 +59,14 @@
 .ButtonItem button:hover{
     background-color: rgb(1, 107, 1);
 }
+
+@media screen and (max-width: 480px) {
+    .AuthForm {
+      margin:0;
+      padding:0;
+      width:70vw;
+     margin-right:20%;
+      overflow: hidden;
+     
+    }
+  }

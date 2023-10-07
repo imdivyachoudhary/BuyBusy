@@ -109,3 +109,34 @@
 .Menu .Active{
     color: brown;
 }
+@media screen and (max-width:480px) {
+    .Navbar{
+       
+        width:90vw;
+        overflow: hidden;
+       
+    }
+    .Logo{
+       font-size: 1rem;
+       
+        display: flex;
+        align-items: center;
+    }
+    .SearchBar{
+        display:none;
+    }
+    .MenuItem{
+        margin-left:0px;
+    }
+    .ItemName{
+        display: none;
+    }
+    .ItemImage{
+        width:100%;
+    }
+    .ItemImage img{
+      
+        width: 100%;
+       
+    }
+}
